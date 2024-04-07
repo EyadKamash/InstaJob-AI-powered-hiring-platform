@@ -2,17 +2,28 @@ import React, { useState } from "react";
 import SignUpImage from "../assets/sign_in_up.png";
 import "../CSS/FormPages.css";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
-  const [userType, setUserType] = useState("job_seeker");
+  const [usertype, setUserType] = useState("job_seeker");
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleUserTypeChange = (event) => {
     setUserType(event.target.value);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Handle form submission here
+  const handleSubmit = (ev) => {
+    ev.preventDefault();
+    axios.post("/register", {
+      firstname,
+      lastname,
+      email,
+      password,
+      usertype,
+    });
   };
 
   return (
@@ -31,6 +42,8 @@ const Register = () => {
                   type="text"
                   required
                   placeholder="First Name"
+                  value={firstname}
+                  onChange={(ev) => setFirstName(ev.target.value)}
                 />
               </div>
               <div className="input-group">
@@ -40,6 +53,8 @@ const Register = () => {
                   type="text"
                   required
                   placeholder="Last Name"
+                  value={lastname}
+                  onChange={(ev) => setLastName(ev.target.value)}
                 />
               </div>
               <div className="input-group">
@@ -49,6 +64,8 @@ const Register = () => {
                   type="email"
                   required
                   placeholder="Email"
+                  value={email}
+                  onChange={(ev) => setEmail(ev.target.value)}
                 />
               </div>
               <div className="input-group">
@@ -58,6 +75,8 @@ const Register = () => {
                   type="password"
                   required
                   placeholder="Passworrd"
+                  value={password}
+                  onChange={(ev) => setPassword(ev.target.value)}
                 />
               </div>
               <div className="radio-group">
@@ -67,7 +86,7 @@ const Register = () => {
                     id="job_seeker"
                     name="user_type"
                     value="job_seeker"
-                    checked={userType === "job_seeker"}
+                    checked={usertype === "job_seeker"}
                     onChange={handleUserTypeChange}
                   />
                   <label htmlFor="job_seeker" className="label">
@@ -80,7 +99,7 @@ const Register = () => {
                     id="company"
                     name="user_type"
                     value="company"
-                    checked={userType === "company"}
+                    checked={usertype === "company"}
                     onChange={handleUserTypeChange}
                   />
                   <label htmlFor="company" className="label">
