@@ -22,7 +22,7 @@ const MainPageBlockOne = () => {
           />
         </div>
         <button className="bg-[#00df9a] w-[200px] rounded-md font-medium my-6 mx-auto py-3 text-black">
-          <Link to="/SignUp">Get Started</Link>
+          <Link to="/register">Get Started</Link>
         </button>
       </div>
     </div>

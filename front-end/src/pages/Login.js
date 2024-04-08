@@ -11,13 +11,15 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("http://your-backend-url.com/login", {
+      const response = await axios.post("/login", {
         email,
         password,
       });
+      alert("Login Successful");
       console.log(response.data); // Log the response from the backend
       // Optionally, redirect the user to another page
     } catch (error) {
+      alert("Invalid email or password ! ");
       console.error("Error:", error);
     }
   };

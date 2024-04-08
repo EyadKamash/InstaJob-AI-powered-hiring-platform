@@ -1,6 +1,7 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
 // Create an Express.js application
@@ -12,10 +13,7 @@ const uri =
   "mongodb+srv://instajob:80z93toSszx6yIlt@cluster0.csynum6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create a new MongoClient
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const client = new MongoClient(uri);
 
 // Connect to the MongoDB server
 async function connect() {
@@ -27,6 +25,9 @@ async function connect() {
     process.exit(1);
   }
 }
+
+// Define the jwtString variable
+const jwtString = "1809427yafnkosilhjfbansoikfhbKJSAFGHDBVAS";
 
 // Express route for registering a new user
 app.use(express.json()); // Middleware to parse JSON bodies
@@ -63,6 +64,40 @@ app.post("/register", async (req, res) => {
     res
       .status(500)
       .json({ message: "An error occurred while creating the user" });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const db = client.db("instajob");
+    const usersCollection = db.collection("users");
+
+    const userDoc = await usersCollection.findOne({ email });
+    if (!userDoc) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    const passwordMatch = bcrypt.compareSync(password, userDoc.password);
+    if (!passwordMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    const token = jwt.sign(
+      { email: userDoc.email, id: userDoc._id },
+      jwtString
+    );
+
+    // Set the JWT token as a cookie in the response
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+      })
+      .json({ message: "Login successful" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "An error occurred while logging in" });
   }
 });
 

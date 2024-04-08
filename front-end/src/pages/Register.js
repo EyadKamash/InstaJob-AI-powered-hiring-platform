@@ -15,16 +15,21 @@ const Register = () => {
     setUserType(event.target.value);
   };
 
-  const handleSubmit = (ev) => {
+  async function handleSubmit(ev) {
     ev.preventDefault();
-    axios.post("/register", {
-      firstname,
-      lastname,
-      email,
-      password,
-      usertype,
-    });
-  };
+    try {
+      await axios.post("/register", {
+        firstname,
+        lastname,
+        email,
+        password,
+        usertype,
+      });
+      alert("Registration successful ! Now you can log in");
+    } catch (e) {
+      alert("Registration Failed ! Try again later");
+    }
+  }
 
   return (
     <div>
