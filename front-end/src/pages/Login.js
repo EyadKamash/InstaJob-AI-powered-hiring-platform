@@ -1,35 +1,37 @@
 import React, { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import axios from "axios";
-import "../CSS/FormPages.css";
+import axios from "axios"; // Import axios
 import SignInImage from "../assets/sign_in_up.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
+  const [userType, setUserType] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("/login", {
+      const response = await axios.post("http://localhost:4000/login", {
         email,
         password,
       });
       alert("Login Successful");
+      setUserType(response.data.usertype);
       setRedirect(true);
-      console.log(response.data); // Log the response from the backend
-      // Optionally, redirect the user to another page
     } catch (error) {
-      alert("Invalid email or password ! ");
+      alert("Invalid email or password");
       console.error("Error:", error);
     }
   };
-
   return (
     <div>
       {redirect ? (
-        <Navigate to="/" /> // Redirect to homepage if redirect state is true
+        userType === "job_seeker" ? (
+          <Navigate to="/clienthome" />
+        ) : (
+          <Navigate to="/companyhome" />
+        )
       ) : (
         <div className="sign-up-container">
           <div className="form-container">
@@ -80,8 +82,5 @@ const Login = () => {
     </div>
   );
 };
-
-// jana speaks
-
 
 export default Login;

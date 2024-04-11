@@ -6,8 +6,10 @@ import Layout from "./Layout";
 import Register from "./pages/Register";
 import axios from "axios";
 import ClientInterface from "./pages/ClientInterface";
+import CompanyInterface from "./pages/CompanyInterface";
 
 axios.defaults.baseURL = "http://localhost:4000";
+//axios.defaults.withCredentials = true;
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/clienthome" element={<ClientInterface />} />
+        <Route path="/companyhome" element={<CompanyInterface />} />
       </Route>
     </Routes>
   );

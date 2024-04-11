@@ -30,11 +30,11 @@ async function connect() {
 const jwtString = "1809427yafnkosilhjfbansoikfhbKJSAFGHDBVAS";
 
 // Express route for registering a new user
-app.use(express.json()); // Middleware to parse JSON bodies
+app.use(express.json());
 app.post("/register", async (req, res) => {
   const { firstname, lastname, email, password, usertype } = req.body;
   try {
-    const db = client.db("instajob"); // Replace 'your_database_name' with your actual database name
+    const db = client.db("instajob");
     const usersCollection = db.collection("users");
 
     // Check if the email is already registered
@@ -88,16 +88,29 @@ app.post("/login", async (req, res) => {
       jwtString
     );
 
-    // Set the JWT token as a cookie in the response
+    // Include the user type in the response
     res
       .cookie("token", token, {
         httpOnly: true,
         secure: true,
       })
-      .json({ message: "Login successful" });
+      .json({ message: "Login successful", usertype: userDoc.usertype });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "An error occurred while logging in" });
+  }
+});
+
+// HANDLING DISPLAYING JOBS IN CLIENTHOME
+app.get("/jobs", async (req, res) => {
+  try {
+    const db = client.db("instajob");
+    const jobsCollection = db.collection("jobposts");
+    const jobs = await jobsCollection.find().toArray();
+    res.json(jobs);
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    res.status(500).json({ message: "An error occurred while fetching jobs" });
   }
 });
 
@@ -106,5 +119,3 @@ app.listen(4000, async () => {
   console.log("Server running on port 4000");
   await connect(); // Connect to MongoDB when the server starts
 });
-
-// jana speaks again 
