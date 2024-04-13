@@ -8,16 +8,25 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
   const [userType, setUserType] = useState("");
+  const [firstname, setFirstName] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("http://localhost:4000/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:4000/login",
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+          credentials: "include",
+        }
+      );
       alert("Login Successful");
       setUserType(response.data.usertype);
+      setFirstName(response.data.firstname);
       setRedirect(true);
     } catch (error) {
       alert("Invalid email or password");
@@ -28,9 +37,9 @@ const Login = () => {
     <div>
       {redirect ? (
         userType === "job_seeker" ? (
-          <Navigate to="/clienthome" />
+          <Navigate to="/clienthome" state={{ firstname }} />
         ) : (
-          <Navigate to="/companyhome" />
+          <Navigate to="/companyhome" state={{ firstname }} />
         )
       ) : (
         <div className="sign-up-container">

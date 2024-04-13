@@ -2,11 +2,39 @@ const express = require("express");
 const { MongoClient } = require("mongodb");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const session = require("express-session");
 const cors = require("cors");
 
 // Create an Express.js application
 const app = express();
-app.use(cors());
+// Update your CORS setup
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Check if the origin is in the allowed origins list
+      const allowedOrigins = ["http://localhost:3000"];
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Allow cookies with CORS
+  })
+);
+
+app.use(
+  session({
+    secret: "1809427yafnkosilhjfbansoikfhbKJSAFGHDBVAS",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      httpOnly: true,
+      secure: false,
+    },
+  })
+);
 
 // MongoDB Connection URI
 const uri =
@@ -88,13 +116,23 @@ app.post("/login", async (req, res) => {
       jwtString
     );
 
-    // Include the user type in the response
+    req.session.user = {
+      email: userDoc.email,
+      id: userDoc._id,
+      usertype: userDoc.usertype,
+      firstname: userDoc.firstname,
+    };
+
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: true,
+        secure: false,
       })
-      .json({ message: "Login successful", usertype: userDoc.usertype });
+      .json({
+        message: "Login successful",
+        usertype: userDoc.usertype,
+        firstname: userDoc.firstname,
+      });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "An error occurred while logging in" });
@@ -111,6 +149,28 @@ app.get("/jobs", async (req, res) => {
   } catch (error) {
     console.error("Error fetching jobs:", error);
     res.status(500).json({ message: "An error occurred while fetching jobs" });
+  }
+});
+
+// Express route for checking login status
+app.get("/checklogin", (req, res) => {
+  if (req.session.user) {
+    return res.json({
+      isLoggedIn: true,
+      usertype: req.session.user.usertype,
+      firstname: req.session.user.firstname,
+    });
+  }
+  res.json({ isLoggedIn: false });
+});
+
+// Express route for logging out
+app.post("/logout", (req, res) => {
+  try {
+    res.clearCookie("token").json({ message: "Logout successful" });
+  } catch (error) {
+    console.error("Error logging out:", error);
+    res.status(500).json({ message: "An error occurred while logging out" });
   }
 });
 
