@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, Navigate } from "react-router-dom";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import SignInImage from "../assets/sign_in_up.png";
+import { UserContext } from "../UserContext";
 
 const Login = () => {
+  const { setUser } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
   const [userType, setUserType] = useState("");
+  // eslint-disable-next-line
   const [firstname, setFirstName] = useState("");
 
   const handleSubmit = async (event) => {
@@ -21,18 +24,23 @@ const Login = () => {
         },
         {
           withCredentials: true,
-          credentials: "include",
         }
       );
       alert("Login Successful");
-      setUserType(response.data.usertype);
-      setFirstName(response.data.firstname);
+      setUser({
+        email: response.data.email,
+        id: response.data.id,
+        usertype: response.data.usertype,
+        firstname: response.data.firstname,
+      });
+      setUserType(response.data.usertype); // Set the user type in state
       setRedirect(true);
     } catch (error) {
       alert("Invalid email or password");
       console.error("Error:", error);
     }
   };
+
   return (
     <div>
       {redirect ? (
