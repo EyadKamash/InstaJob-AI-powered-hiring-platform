@@ -5,10 +5,11 @@ const jwt = require("jsonwebtoken");
 const session = require("express-session");
 const cors = require("cors");
 const multer = require("multer");
+const fs = require("fs");
 
 const upload = multer({
   dest: "uploads/",
-  fieldname: "cv", // Specify the expected field name
+  fieldname: "file", // Specify the expected field name
 });
 
 const app = express();
@@ -157,27 +158,27 @@ app.get("/jobs", async (req, res) => {
   }
 });
 
-app.post("/predict", upload.single("cv"), async (req, res) => {
-  try {
-    const cvFile = fs.readFileSync(req.file.path);
-    const formData = new FormData();
-    formData.append("cv", cvFile, req.file.originalname);
+// app.post("/predict", upload.single("file"), async (req, res) => {
+//   try {
+//     const cvFile = fs.readFileSync(req.file.path);
+//     const formData = new FormData();
+//     formData.append("file", cvFile, req.file.originalname);
 
-    const flaskResponse = await axios.post(
-      "http://localhost:5000/predict",
-      formData,
-      {
-        headers: formData.getHeaders(),
-      }
-    );
+//     const flaskResponse = await axios.post(
+//       "http://localhost:5000/predict",
+//       formData,
+//       {
+//         headers: formData.getHeaders(),
+//       }
+//     );
 
-    // Handle the Flask response here
-    res.json({ result: flaskResponse.data });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     // Handle the Flask response here
+//     res.json({ result: flaskResponse.data });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 app.listen(4000, async () => {
   console.log("Server running on port 4000");

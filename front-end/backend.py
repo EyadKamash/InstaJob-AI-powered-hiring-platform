@@ -29,14 +29,14 @@ def extract_text_from_pdf(pdf_file):
 # Define route for the home page
 @app.route('/')
 def home():
-    return render_template('LandingPage.js')
+    return render_template('IndexPage.js')
 
 # Define route for form submission
 @app.route('/predict', methods=['POST'])
 def predict():
     if request.method == 'POST':
         # Get the uploaded file
-        uploaded_file = request.files['cv']
+        uploaded_file = request.files['file']
         if uploaded_file.filename != '':
             # Extract text from the PDF
             pdf_text = extract_text_from_pdf(uploaded_file)
@@ -81,3 +81,4 @@ def predict():
 
 if __name__ == '__main__':
     app.run(debug=True)
+

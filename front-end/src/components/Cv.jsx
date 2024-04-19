@@ -3,13 +3,14 @@ import cv from "../assets/cv.jpg";
 
 function Cv() {
   const [predictionResult, setPredictionResult] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
 
     try {
-      const response = await fetch("/", {
+      const response = await fetch("http://localhost:5000/predict", {
         method: "POST",
         body: formData,
       });
@@ -18,11 +19,11 @@ function Cv() {
         throw new Error("Failed to fetch prediction result");
       }
 
-      const data = await response.text();
-      setPredictionResult(data);
+      const data = await response.json(); // Parse response as JSON
+      setPredictionResult(data.prediction); // Update state with prediction result
     } catch (error) {
-      console.error("Error:", error);
-      // Handle error, e.g., display error message
+      console.error("Error fetching prediction:", error);
+      setErrorMessage("Failed to fetch prediction result");
     }
   };
 
@@ -31,13 +32,13 @@ function Cv() {
       <div className="max-w-[1240px] mx-auto grid md:grid-cols-2">
         <img className="w-[500px] mx-auto my-4" src={cv} alt="CV" />
         <div className="flex flex-col justify-center">
-          <h1 className="md:text-4xl sm:text-3xl text-2xl font-bold py-2 ">
-            GET YOUR CV ANALYZED USING MODERN AI !
+          <h1 className="md:text-4xl sm:text-3xl text-2xl font-bold py-2">
+            GET YOUR CV ANALYZED USING MODERN AI!
           </h1>
           <p className="font-bold py-2 my-4">
-            Match with available job offers based on your cv
+            Match with available job offers based on your CV
           </p>
-          <p className="font-bold py-2 my-2">Upload your cv here :</p>
+          <p className="font-bold py-2 my-2">Upload your CV here:</p>
           <form
             id="uploadForm"
             action="/"
@@ -58,15 +59,22 @@ function Cv() {
 
               <button
                 type="submit"
-                className="bg-[#00df9a]  rounded-md font-bold p-2 md:w-auto w-full text-black"
+                className="bg-[#00df9a] rounded-md font-bold p-2 md:w-auto w-full text-black"
               >
                 ANALYZE
               </button>
             </div>
           </form>
-          <div className="text-black" id="predictionResult ">
-            {predictionResult}
-          </div>
+          {predictionResult && (
+            <div className="text-black" id="predictionResult">
+              Predicted job: {predictionResult}
+            </div>
+          )}
+          {errorMessage && (
+            <div className="text-red-500" id="errorMessage">
+              {errorMessage}
+            </div>
+          )}
         </div>
       </div>
     </div>
