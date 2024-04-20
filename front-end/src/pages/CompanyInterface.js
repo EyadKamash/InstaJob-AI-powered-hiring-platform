@@ -1,40 +1,51 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import "../CSS/Dashboard.css";
+import OptionsBar from "../components/OptionsBar";
+import DBoardContent from "../Functions/DBoardContent";
 
 function CompanyInterface() {
-  const { user } = useContext(UserContext);
-  const [firstname, setFirstname] = useState("");
+  const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    } else {
-      setFirstname(user.firstname);
-    }
-  }, [user, navigate]);
 
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost:4000/logout");
+      setUser(null);
       navigate("/login");
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
 
+  const [selectedOption, setSelectedOption] = useState("Jobs");
+
+  const handleOptionSelect = (option) => {
+    setSelectedOption(option);
+  };
+
   return (
-    <div>
-      <h1 className="text-white text-right mr-11">HELLO, {firstname}</h1>
-      <button
-        className="bg-[#ff5050] w-[200px] rounded-md font-bold my-6 mx-auto py-3 text-black"
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
-      <div className="text-white">CompanyInterface</div>
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col">
+        <OptionsBar
+          selectedOption={selectedOption}
+          handleOptionSelect={handleOptionSelect}
+        />
+        <div className="bg-white flex flex-col flex-1 px-4 py-4 md:px-8 md:py-8">
+          <DBoardContent selectedOption={selectedOption} />
+        </div>
+        <div className="bg-gray-800 text-white p-4 flex justify-between items-center">
+          <h1 className="font-style: italic">hello {user.firstname}</h1>
+          <button
+            className="p-2 bg-red-500 text-white rounded"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -6,7 +6,6 @@ import Layout from "./Layout";
 import Register from "./pages/Register";
 import ClientInterface from "./pages/ClientInterface";
 import CompanyInterface from "./pages/CompanyInterface";
-import Dashboard from "./pages/Dashboard";
 import { useUser, UserContextProvider } from "./UserContext";
 
 function App() {
@@ -39,7 +38,6 @@ function AppRoutes() {
         <Route index element={<IndexPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dash" element={<Dashboard/>}/>
         {user && (
           <>
             <Route path="/clienthome" element={<ClientInterface />} />
