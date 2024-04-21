@@ -27,12 +27,14 @@ function CompanyInterface() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen overflow-hidden">
-      <div className="flex-1 flex flex-col">
+    <div className="flex h-screen overflow-hidden">
+      <div className="w-48 bg-black-200 flex-shrink-0">
         <OptionsBar
           selectedOption={selectedOption}
           handleOptionSelect={handleOptionSelect}
         />
+      </div>
+      <div className="flex-1 flex flex-col">
         <div className="bg-white flex flex-col flex-1 px-4 py-4 md:px-8 md:py-8">
           <DBoardContent selectedOption={selectedOption} />
         </div>
