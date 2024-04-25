@@ -3,7 +3,7 @@ import React from "react";
 const Jobpost = ({ job }) => {
   return (
     <div key={job._id}>
-      <div className="bg-gray-200 shadow-xl rounded-lg p-4 mb-4 lg:w-[80%] sm:w-[100%]">
+      <div className="bg-gray-200 shadow-xl rounded-lg p-4 mb-4 lg:w-[60%] sm:w-[100%]">
         <div className="text-xl font-bold text-gray-800">{job.title}</div>
         <div className="text-gray-600">{job.company}</div>
         <div className="text-gray-500">{job.location}</div>
