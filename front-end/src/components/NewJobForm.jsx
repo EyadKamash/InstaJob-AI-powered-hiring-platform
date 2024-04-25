@@ -1,79 +1,76 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect } from "react";
 
 function NewJobForm() {
-  const [desc, setDesc] = useState('');
-  const [email, setEmail] = useState('');
-  const [rew, resp,setrew] = useState('');
-  const [selectedOption, setSelectedOption] = useState('');
-  const [deadline, setDeadline] = useState('');
-  const [salary, setSalary] = useState('');
+  const [desc, setDesc] = useState("");
+  const [email, setEmail] = useState("");
+  //const [rew, resp,setrew] = useState('');
+  const [rew, resp] = useState("");
+  const [selectedOption, setSelectedOption] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [salary, setSalary] = useState("");
   const [countryList, setCountryList] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [isChecked, setIsChecked] = useState(false);
-
 
   const handleSubmit = (event) => {
     console.log(`Name: ${desc}, Email: ${email}`);
     console.log(`Selected option: ${selectedOption}`);
   };
 
-    console.log('countryList:', countryList);
-    console.log('selectedCountry:', selectedCountry);
- 
-    
-  
-  
-      useEffect(() => {
-        const fetchCountries = async () => {
-            try {
-              const response = await fetch(
-                `http://api.geonames.org/countryInfoJSON?username=janna21&style=FULL`
-              );
-              const data = await response.json();
-              console.log("Response data:", data);
-              if (data.geonames && data.geonames.length > 0) {
-                setCountryList(data.geonames);
-                setSelectedCountry(data.geonames[0].countryName);
-              } else {
-                console.error("Error fetching countries:", data.status.message || "Unknown error");
-              }
-            } catch (error) {
-              console.error("Error fetching countries:", error);
-            }
-          };
-        fetchCountries();
-      }, []);
+  console.log("countryList:", countryList);
+  console.log("selectedCountry:", selectedCountry);
 
-    //   const countryCode = selectedCountry && selectedCountry.countryCode && selectedCountry.countryCode;
-    //   console.log('country code',countryCode)
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch(
+          `http://api.geonames.org/countryInfoJSON?username=janna21&style=FULL`
+        );
+        const data = await response.json();
+        console.log("Response data:", data);
+        if (data.geonames && data.geonames.length > 0) {
+          setCountryList(data.geonames);
+          setSelectedCountry(data.geonames[0].countryName);
+        } else {
+          console.error(
+            "Error fetching countries:",
+            data.status.message || "Unknown error"
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+    fetchCountries();
+  }, []);
 
-    //   useEffect(() => {
-    //     // Fetch cities based on selected country
-    //     const fetchCities = async () => {
-    //         try {
-    //           const countryCode = selectedCountry.
-    //           const response = await fetch(
-    //             `http://api.geonames.org/citiesJSON?username=janna21&country=${countryCode}&north=32&south=24&east=40&west=32`
-    //           );
-    //           console.log('url',response)
-    //           console.log('cc',countryCode)
-    //           const data = await response.json();
-    //           console.log("Response data:", data);
-    //           if (data && data.geonames && data.geonames.length > 0) {
-    //             setCityList(data.geonames);
-    //             setSelectedCity(data.geonames[0] || {});
-    //           } else {
-    //             console.error("Error fetching cities:", data.status.message || "Unknown error");
-    //           }
-    //         } catch (error) {
-    //           console.error("Error fetching cities:", error);
-    //         }
-    //       };
-    //     fetchCities();
-    //   }, [selectedCountry]);
-    
-      
+  //   const countryCode = selectedCountry && selectedCountry.countryCode && selectedCountry.countryCode;
+  //   console.log('country code',countryCode)
+
+  //   useEffect(() => {
+  //     // Fetch cities based on selected country
+  //     const fetchCities = async () => {
+  //         try {
+  //           const countryCode = selectedCountry.
+  //           const response = await fetch(
+  //             `http://api.geonames.org/citiesJSON?username=janna21&country=${countryCode}&north=32&south=24&east=40&west=32`
+  //           );
+  //           console.log('url',response)
+  //           console.log('cc',countryCode)
+  //           const data = await response.json();
+  //           console.log("Response data:", data);
+  //           if (data && data.geonames && data.geonames.length > 0) {
+  //             setCityList(data.geonames);
+  //             setSelectedCity(data.geonames[0] || {});
+  //           } else {
+  //             console.error("Error fetching cities:", data.status.message || "Unknown error");
+  //           }
+  //         } catch (error) {
+  //           console.error("Error fetching cities:", error);
+  //         }
+  //       };
+  //     fetchCities();
+  //   }, [selectedCountry]);
 
   return (
     <div>
@@ -147,54 +144,46 @@ function NewJobForm() {
             </div>
           </div>
 
-          <div style={{paddingTop:'1rem' , paddingBottom:'1rem'}}>
+          <div style={{ paddingTop: "1rem", paddingBottom: "1rem" }}>
             <input
-                type="checkbox"
-                checked={isChecked}
-                onChange={(e) => setIsChecked(e.target.checked)}
-                
+              type="checkbox"
+              checked={isChecked}
+              onChange={(e) => setIsChecked(e.target.checked)}
             />
-            <label style={{padding:'0.7rem'}}>
-                 Remote position
-            </label>
-        </div>
+            <label style={{ padding: "0.7rem" }}>Remote position</label>
+          </div>
 
-            <div className="flex">
-                <div className="w-1/2 pr-2">
-                <label>
-                Country
-                 </label>   
-                <select
-                    value={selectedCountry || 'none'} 
-                    onChange={(e) => {
-                        setSelectedCountry(e.target.value);
-                    }}
-                    className="w-full border-4 border-white-3000 p-4 mb-4"
-                    style={{ width: '550px', height: '45px' }}
-                    >
-                    {countryList.map((country, index) => (
-                        <option key={country.countryCode} value={country.countryName}>
-                        {country.countryName}
-                        </option>
-                    ))}
-                </select>
-                </div>
+          <div className="flex">
+            <div className="w-1/2 pr-2">
+              <label>Country</label>
+              <select
+                value={selectedCountry || "none"}
+                onChange={(e) => {
+                  setSelectedCountry(e.target.value);
+                }}
+                className="w-full border-4 border-white-3000 p-4 mb-4"
+                style={{ width: "550px", height: "45px" }}
+              >
+                {countryList.map((country, index) => (
+                  <option key={country.countryCode} value={country.countryName}>
+                    {country.countryName}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                <div className="w-1/2 pl-2">
-                <label>
-                City
-                </label>  
-                    <input
-                    type="text"
-                    id="country"
-                    value={salary}
-                    onChange={(event) => setSalary(event.target.value)}
-                    className="w-full border-2 border-gray-300 p-2 mb-4"
-                    />
-                </div>
-              </div>
-        
-      
+            <div className="w-1/2 pl-2">
+              <label>City</label>
+              <input
+                type="text"
+                id="country"
+                value={salary}
+                onChange={(event) => setSalary(event.target.value)}
+                className="w-full border-2 border-gray-300 p-2 mb-4"
+              />
+            </div>
+          </div>
+
           <label htmlFor="desc" className="block mb-2">
             Job Description
           </label>
@@ -238,7 +227,6 @@ function NewJobForm() {
             onChange={(event) => setEmail(event.target.value)}
             className="w-full border-2 border-gray-300 p-2 mb-4"
           />
-
 
           <button type="submit" className="w-full bg-blue-500 text-white p-2">
             Submit

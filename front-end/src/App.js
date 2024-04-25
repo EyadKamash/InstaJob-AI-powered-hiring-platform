@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import ClientInterface from "./pages/ClientInterface";
 import CompanyInterface from "./pages/CompanyInterface";
 import { useUser, UserContextProvider } from "./UserContext";
+import axios from "axios";
 
 function App() {
   return (
@@ -17,20 +18,36 @@ function App() {
 }
 
 function AppRoutes() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (
-      !user &&
-      (location.pathname === "/clienthome" ||
-        location.pathname === "/companyhome")
-    ) {
-      alert("You must be logged in!");
-      navigate("/login", { replace: true });
-    }
-  }, [user, navigate, location]);
+    const checkAuthStatus = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/checkauth", {
+          withCredentials: true,
+        });
+        const user = response.data;
+        setUser(user);
+      } catch (error) {
+        console.error("Error checking authentication status:", error);
+        setUser(null);
+        if (
+          location.pathname === "/clienthome" ||
+          location.pathname === "/companyhome"
+        ) {
+          alert("Unauthorized");
+          navigate(
+            user.usertype === "job_seeker" ? "/clienthome" : "/companyhome",
+            { replace: true }
+          );
+        }
+      }
+    };
+
+    checkAuthStatus();
+  }, [setUser, navigate, location.pathname, user?.usertype]);
 
   return (
     <Routes>
@@ -40,7 +57,9 @@ function AppRoutes() {
         <Route path="/register" element={<Register />} />
         {user && (
           <>
-            <Route path="/clienthome" element={<ClientInterface />} />
+            {user.usertype === "job_seeker" && (
+              <Route path="/clienthome" element={<ClientInterface />} />
+            )}
             {user.usertype === "company" && (
               <Route path="/companyhome" element={<CompanyInterface />} />
             )}

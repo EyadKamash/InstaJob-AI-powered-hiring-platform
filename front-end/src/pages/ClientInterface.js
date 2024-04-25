@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
-import OptionsBar from "../components/OptionsBar";
-import DBoardContent from "../Functions/DBoardContent";
+import ClientOptionsBar from "../components/ClientOptionsBar";
 import Jobpost from "../components/Jobpost";
+import ClientDBoardContent from "../Functions/ClientDBoardContent";
 
 function ClientInterface() {
   const { user } = useContext(UserContext);
@@ -32,13 +32,16 @@ function ClientInterface() {
   }, []);
 
   useEffect(() => {
-    if (!user) {
+    const token = localStorage.getItem("token");
+    if (!token) {
       navigate("/login");
     } else {
       const fetchJobs = async () => {
         try {
           const response = await axios.get("http://localhost:4000/jobs", {
-            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           });
           setJobs(response.data);
           setFilteredJobs(response.data);
@@ -54,12 +57,8 @@ function ClientInterface() {
   }, [user, navigate]);
 
   const handleLogout = async () => {
-    try {
-      await axios.post("http://localhost:4000/logout");
-      navigate("/login");
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   const handleFilterChange = (e) => {
@@ -96,7 +95,7 @@ function ClientInterface() {
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="w-48 bg-black-200 flex-shrink-0">
-        <OptionsBar
+        <ClientOptionsBar
           selectedOption={selectedOption}
           handleOptionSelect={handleOptionSelect}
         />
@@ -138,7 +137,13 @@ function ClientInterface() {
             </>
           )}
           {selectedOption !== "Jobs" && (
-            <DBoardContent selectedOption={selectedOption} />
+            <ClientDBoardContent
+              selectedOption={selectedOption}
+              filteredJobs={filteredJobs}
+              filter={filter}
+              showRemote={showRemote}
+              selectedCountry={selectedCountry}
+            />
           )}
         </div>
         <div

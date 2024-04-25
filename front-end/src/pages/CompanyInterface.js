@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import axios from "axios";
+import React, { useState, useContext, useEffect } from "react";
+//import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import "../CSS/Dashboard.css";
@@ -7,17 +7,33 @@ import OptionsBar from "../components/OptionsBar";
 import DBoardContent from "../Functions/DBoardContent";
 
 function CompanyInterface() {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await axios.post("http://localhost:4000/logout");
-      setUser(null);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
       navigate("/login");
-    } catch (error) {
-      console.error("Error logging out:", error);
     }
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   const [selectedOption, setSelectedOption] = useState("Jobs");
@@ -41,7 +57,9 @@ function CompanyInterface() {
         <div className="bg-gray-800 text-white p-4 flex justify-between items-center">
           <h1 className="font-style: italic">hello {user.firstname}</h1>
           <button
-            className="p-2 bg-red-500 text-white rounded"
+            className={`p-2 bg-red-500 text-white rounded ml-10 ${
+              isMobile ? "w-full" : ""
+            }`}
             onClick={handleLogout}
           >
             Logout

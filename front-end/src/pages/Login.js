@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { Link, Navigate } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import SignInImage from "../assets/sign_in_up.png";
 import { UserContext } from "../UserContext";
@@ -12,6 +12,8 @@ const Login = () => {
   const [userType, setUserType] = useState("");
   // eslint-disable-next-line
   const [firstname, setFirstName] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,7 +35,8 @@ const Login = () => {
         usertype: response.data.usertype,
         firstname: response.data.firstname,
       });
-      setUserType(response.data.usertype); // Set the user type in state
+      setUserType(response.data.usertype);
+      localStorage.setItem("token", response.data.token); // Save token to localStorage
       setRedirect(true);
     } catch (error) {
       alert("Invalid email or password");
@@ -41,15 +44,19 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    if (redirect) {
+      if (userType === "job_seeker") {
+        navigate("/clienthome", { state: { firstname } });
+      } else {
+        navigate("/companyhome", { state: { firstname } });
+      }
+    }
+  }, [redirect, userType, firstname, navigate]);
+
   return (
     <div>
-      {redirect ? (
-        userType === "job_seeker" ? (
-          <Navigate to="/clienthome" state={{ firstname }} />
-        ) : (
-          <Navigate to="/companyhome" state={{ firstname }} />
-        )
-      ) : (
+      {!redirect ? (
         <div className="sign-up-container">
           <div className="form-container">
             <div className="form-content">
@@ -95,6 +102,11 @@ const Login = () => {
             <img className="sign-up-image" src={SignInImage} alt="Sign In" />
           </div>
         </div>
+      ) : (
+        <Navigate
+          to={userType === "job_seeker" ? "/clienthome" : "/companyhome"}
+          state={{ firstname }}
+        />
       )}
     </div>
   );
