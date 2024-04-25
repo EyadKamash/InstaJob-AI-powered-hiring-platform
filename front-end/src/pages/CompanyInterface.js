@@ -35,7 +35,7 @@ function CompanyInterface() {
         />
       </div>
       <div className="flex-1 flex flex-col">
-        <div className="bg-white flex flex-col flex-1 px-4 py-4 md:px-8 md:py-8">
+        <div className="bg-white flex flex-col flex-1 px-4 py-4 md:px-8 md:py-8 overflow-y-auto">
           <DBoardContent selectedOption={selectedOption} />
         </div>
         <div className="bg-gray-800 text-white p-4 flex justify-between items-center">
