@@ -4,6 +4,7 @@ import { UserContext } from "../UserContext";
 
 function NewJobForm() {
   const { user } = useContext(UserContext);
+  // eslint-disable-next-line
   const [companyemail, setCompanyEmail] = useState(user.email);
   const [selectedOption, setSelectedOption] = useState("");
   const [description, setDescription] = useState("");
@@ -65,22 +66,21 @@ function NewJobForm() {
   }, []);
 
   return (
-    <div>
-      <div>
-        <h1 style={{ fontSize: "25px", fontWeight: "bolder" }}>New Job</h1>
-      </div>
-
-      <div>
-        <form onSubmit={handleSubmit} style={{ padding: "2rem" }}>
-          <label htmlFor="Fname" className="block mb-2">
+    <div className="flex justify-center items-start">
+      <div className="w-full rounded shadow-md">
+        <h1 className="text-2xl font-bold mb-4">New Job</h1>
+        <form onSubmit={handleSubmit}>
+          <label
+            htmlFor="title"
+            className="block text-gray-700 text-sm font-bold mb-2"
+          >
             Job Title
           </label>
-
           <select
-            id="options"
+            id="title"
             value={selectedOption}
             onChange={(event) => setSelectedOption(event.target.value)}
-            className="w-full border-4 border-white-300 p-5 mb-4"
+            className="w-full border border-gray-300 p-2 pl-10 text-sm text-gray-700"
           >
             <option value="">-- Select an option --</option>
             <option value="option1">Java Developer</option>
@@ -110,20 +110,28 @@ function NewJobForm() {
             <option value="option25">Advocate</option>
           </select>
 
-          <div className="flex">
+          <div className="flex mb-4">
             <div className="w-1/2 pr-2">
-              <label className="block mb-2">Deadline</label>
+              <label
+                htmlFor="deadline"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Deadline
+              </label>
               <input
                 type="date"
                 id="deadline"
                 value={deadline}
                 onChange={(event) => setDeadline(event.target.value)}
-                className="w-full border-2 border-gray-300 p-2 mb-4"
+                className="w-full border border-gray-300 p-2 text-sm text-gray-700"
               />
             </div>
 
             <div className="w-1/2 pl-2">
-              <label htmlFor="salary" className="block mb-2">
+              <label
+                htmlFor="salary"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Salary
               </label>
               <input
@@ -131,30 +139,41 @@ function NewJobForm() {
                 id="salary"
                 value={salary}
                 onChange={(event) => setSalary(event.target.value)}
-                className="w-full border-2 border-gray-300 p-2 mb-4"
+                className="w-full border border-gray-300 p-2 text-sm text-gray-700"
               />
             </div>
           </div>
 
-          <div style={{ paddingTop: "1rem", paddingBottom: "1rem" }}>
-            <input
-              type="checkbox"
-              checked={remote}
-              onChange={(e) => setRemote(e.target.checked)}
-            />
-            <label style={{ padding: "0.7rem" }}>Remote position</label>
-          </div>
-
-          <div className="flex">
+          <div className="flex mb-4">
             <div className="w-1/2 pr-2">
-              <label>Country</label>
+              <label
+                htmlFor="remote"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Remote position
+              </label>
+              <input
+                type="checkbox"
+                id="remote"
+                checked={remote}
+                onChange={(e) => setRemote(e.target.checked)}
+                className="w-4 h-4 border border-gray-300 rounded-sm text-blue-500 focus:ring-blue-500 focus:ring-2"
+              />
+            </div>
+
+            <div className="w-1/2 pl-2">
+              <label
+                htmlFor="country"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Country
+              </label>
               <select
                 value={selectedCountry || "none"}
                 onChange={(e) => {
                   setSelectedCountry(e.target.value);
                 }}
-                className="w-full border-4 border-white-3000 p-4 mb-4"
-                style={{ width: "550px", height: "45px" }}
+                className="w-full border border-gray-300 p-2 text-sm text-gray-700"
               >
                 {countryList.map((country, index) => (
                   <option key={country.countryCode} value={country.countryName}>
@@ -163,64 +182,88 @@ function NewJobForm() {
                 ))}
               </select>
             </div>
-
-            <div className="w-1/2 pl-2">
-              <label>City</label>
-              <input
-                type="text"
-                id="country"
-                value={city}
-                onChange={(event) => setCity(event.target.value)}
-                className="w-full border-2 border-gray-300 p-2 mb-4"
-              />
-            </div>
           </div>
 
-          <label htmlFor="desc" className="block mb-2">
-            Job Description
-          </label>
-          <textarea
-            type="text"
-            id="desc"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            className="w-full border-2 border-gray-300 p-2 mb-4"
-          />
+          <div className="mb-4">
+            <label
+              htmlFor="city"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              City
+            </label>
+            <input
+              type="text"
+              id="city"
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+              className="w-full border border-gray-300 p-2 text-sm text-gray-700"
+            />
+          </div>
 
-          <label htmlFor="email" className="block mb-2">
-            Job Requirements
-          </label>
-          <textarea
-            type="text"
-            id="email"
-            value={requirements}
-            onChange={(event) => setRequirements(event.target.value)}
-            className="w-full border-2 border-gray-300 p-2 mb-4"
-          />
+          <div className="mb-4">
+            <label
+              htmlFor="description"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Job Description
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              className="w-full border border-gray-300 p-2 text-sm text-gray-700"
+            />
+          </div>
 
-          <label htmlFor="resp" className="block mb-2">
-            Job Responsibilities
-          </label>
-          <textarea
-            type="text"
-            id="responsibilities"
-            value={responsibilities}
-            onChange={(event) => setResponsibilities(event.target.value)}
-            className="w-full border-2 border-gray-300 p-2 mb-4"
-          />
+          <div className="mb-4">
+            <label
+              htmlFor="requirements"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Job Requirements
+            </label>
+            <textarea
+              id="requirements"
+              value={requirements}
+              onChange={(event) => setRequirements(event.target.value)}
+              className="w-full border border-gray-300 p-2 text-sm text-gray-700"
+            />
+          </div>
 
-          <label htmlFor="rew" className="block mb-2">
-            Job Rewards
-          </label>
-          <textarea
-            type="text"
-            id="rew"
-            value={rewards}
-            onChange={(event) => setRewards(event.target.value)}
-            className="w-full border-2 border-gray-300 p-2 mb-4"
-          />
+          <div className="mb-4">
+            <label
+              htmlFor="responsibilities"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Job Responsibilities
+            </label>
+            <textarea
+              id="responsibilities"
+              value={responsibilities}
+              onChange={(event) => setResponsibilities(event.target.value)}
+              className="w-full border border-gray-300 p-2 text-sm text-gray-700"
+            />
+          </div>
 
-          <button type="submit" className="w-full bg-blue-500 text-white p-2">
+          <div className="mb-4">
+            <label
+              htmlFor="rewards"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Job Rewards
+            </label>
+            <textarea
+              id="rewards"
+              value={rewards}
+              onChange={(event) => setRewards(event.target.value)}
+              className="w-full border border-gray-300 p-2 text-sm text-gray-700"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-2 rounded"
+          >
             Submit
           </button>
         </form>
