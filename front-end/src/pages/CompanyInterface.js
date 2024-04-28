@@ -55,7 +55,9 @@ function CompanyInterface() {
           <DBoardContent selectedOption={selectedOption} />
         </div>
         <div className="bg-gray-800 text-white p-4 flex justify-between items-center">
-          <h1 className="font-style: italic">hello {user.firstname}</h1>
+          <h1 className="font-style: italic">
+            hello {user.firstname} {user.email}
+          </h1>
           <button
             className={`p-2 bg-red-500 text-white rounded ml-10 ${
               isMobile ? "w-full" : ""

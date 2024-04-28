@@ -1,24 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { UserContext } from "../UserContext";
 
 function NewJobForm() {
-  const [desc, setDesc] = useState("");
-  const [email, setEmail] = useState("");
-  //const [rew, resp,setrew] = useState('');
-  const [rew, resp] = useState("");
+  const { user } = useContext(UserContext);
+  const [companyemail, setCompanyEmail] = useState(user.email);
   const [selectedOption, setSelectedOption] = useState("");
+  const [description, setDescription] = useState("");
+  const [requirements, setRequirements] = useState("");
+  const [responsibilities, setResponsibilities] = useState("");
+  const [rewards, setRewards] = useState("");
   const [deadline, setDeadline] = useState("");
   const [salary, setSalary] = useState("");
+  const [city, setCity] = useState("");
   const [countryList, setCountryList] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
+  const [remote, setRemote] = useState(false);
 
-  const handleSubmit = (event) => {
-    console.log(`Name: ${desc}, Email: ${email}`);
-    console.log(`Selected option: ${selectedOption}`);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      await axios.post("http://localhost:4000/postingjobs", {
+        companyemail,
+        title: selectedOption,
+        description,
+        requirements,
+        responsibilities,
+        rewards,
+        deadline,
+        salary,
+        country: selectedCountry,
+        city,
+        remote,
+      });
+      alert("Job posted successfully!");
+    } catch (error) {
+      console.error("Error posting job:", error);
+      alert("An error occurred while posting the job.");
+    }
   };
-
-  console.log("countryList:", countryList);
-  console.log("selectedCountry:", selectedCountry);
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -43,34 +63,6 @@ function NewJobForm() {
     };
     fetchCountries();
   }, []);
-
-  //   const countryCode = selectedCountry && selectedCountry.countryCode && selectedCountry.countryCode;
-  //   console.log('country code',countryCode)
-
-  //   useEffect(() => {
-  //     // Fetch cities based on selected country
-  //     const fetchCities = async () => {
-  //         try {
-  //           const countryCode = selectedCountry.
-  //           const response = await fetch(
-  //             `http://api.geonames.org/citiesJSON?username=janna21&country=${countryCode}&north=32&south=24&east=40&west=32`
-  //           );
-  //           console.log('url',response)
-  //           console.log('cc',countryCode)
-  //           const data = await response.json();
-  //           console.log("Response data:", data);
-  //           if (data && data.geonames && data.geonames.length > 0) {
-  //             setCityList(data.geonames);
-  //             setSelectedCity(data.geonames[0] || {});
-  //           } else {
-  //             console.error("Error fetching cities:", data.status.message || "Unknown error");
-  //           }
-  //         } catch (error) {
-  //           console.error("Error fetching cities:", error);
-  //         }
-  //       };
-  //     fetchCities();
-  //   }, [selectedCountry]);
 
   return (
     <div>
@@ -147,8 +139,8 @@ function NewJobForm() {
           <div style={{ paddingTop: "1rem", paddingBottom: "1rem" }}>
             <input
               type="checkbox"
-              checked={isChecked}
-              onChange={(e) => setIsChecked(e.target.checked)}
+              checked={remote}
+              onChange={(e) => setRemote(e.target.checked)}
             />
             <label style={{ padding: "0.7rem" }}>Remote position</label>
           </div>
@@ -177,8 +169,8 @@ function NewJobForm() {
               <input
                 type="text"
                 id="country"
-                value={salary}
-                onChange={(event) => setSalary(event.target.value)}
+                value={city}
+                onChange={(event) => setCity(event.target.value)}
                 className="w-full border-2 border-gray-300 p-2 mb-4"
               />
             </div>
@@ -190,8 +182,8 @@ function NewJobForm() {
           <textarea
             type="text"
             id="desc"
-            value={desc}
-            onChange={(event) => setDesc(event.target.value)}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
             className="w-full border-2 border-gray-300 p-2 mb-4"
           />
 
@@ -201,8 +193,8 @@ function NewJobForm() {
           <textarea
             type="text"
             id="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            value={requirements}
+            onChange={(event) => setRequirements(event.target.value)}
             className="w-full border-2 border-gray-300 p-2 mb-4"
           />
 
@@ -211,9 +203,9 @@ function NewJobForm() {
           </label>
           <textarea
             type="text"
-            id="resp"
-            value={resp}
-            onChange={(event) => setEmail(event.target.value)}
+            id="responsibilities"
+            value={responsibilities}
+            onChange={(event) => setResponsibilities(event.target.value)}
             className="w-full border-2 border-gray-300 p-2 mb-4"
           />
 
@@ -223,8 +215,8 @@ function NewJobForm() {
           <textarea
             type="text"
             id="rew"
-            value={rew}
-            onChange={(event) => setEmail(event.target.value)}
+            value={rewards}
+            onChange={(event) => setRewards(event.target.value)}
             className="w-full border-2 border-gray-300 p-2 mb-4"
           />
 

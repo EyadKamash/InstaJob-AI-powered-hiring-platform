@@ -7,6 +7,7 @@ const cors = require("cors");
 const multer = require("multer");
 const fs = require("fs");
 const MongoStore = require("connect-mongo");
+const Job = require("./models/JobSchema");
 
 const upload = multer({
   dest: "uploads/",
@@ -205,6 +206,26 @@ app.get("/checkauth", (req, res) => {
     res.status(401).json({ message: "Unauthorized" });
   }
 });
+
+// //user profile
+// app.get("/userProfile/:userID", async (req, res) => {
+//   try {
+//     const user = await User.findById({ _id: req.params.id }).select(
+//       "-password"
+//     );
+
+//     if (!user) {
+//       return res.status(404).json({ msg: "User not found" });
+//     }
+
+//     res.status(200).json({ user });
+//   } catch (error) {
+//     console.error("Error fetching user profile", error);
+//     res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
+
+//----------------------------------------------------------------------------------------
 
 // app.post("/predict", upload.single("file"), async (req, res) => {
 //   try {

@@ -12,6 +12,8 @@ const Login = () => {
   const [userType, setUserType] = useState("");
   // eslint-disable-next-line
   const [firstname, setFirstName] = useState("");
+  // eslint-disable-next-line
+  const [lastname, setLastName] = useState("");
 
   const navigate = useNavigate();
 
@@ -29,13 +31,16 @@ const Login = () => {
         }
       );
       alert("Login Successful");
+
       setUser({
         email: response.data.email,
         id: response.data.id,
         usertype: response.data.usertype,
+        lastname: response.data.lastname,
         firstname: response.data.firstname,
       });
       setUserType(response.data.usertype);
+      setFirstName(response.data.firstname);
       localStorage.setItem("token", response.data.token); // Save token to localStorage
       setRedirect(true);
     } catch (error) {
@@ -47,12 +52,12 @@ const Login = () => {
   useEffect(() => {
     if (redirect) {
       if (userType === "job_seeker") {
-        navigate("/clienthome", { state: { firstname } });
+        navigate("/clienthome", { state: { firstname, email } });
       } else {
-        navigate("/companyhome", { state: { firstname } });
+        navigate("/companyhome", { state: { firstname, email } });
       }
     }
-  }, [redirect, userType, firstname, navigate]);
+  }, [redirect, userType, firstname, lastname, email, navigate]);
 
   return (
     <div>
@@ -105,7 +110,7 @@ const Login = () => {
       ) : (
         <Navigate
           to={userType === "job_seeker" ? "/clienthome" : "/companyhome"}
-          state={{ firstname }}
+          state={{ firstname, email }}
         />
       )}
     </div>
