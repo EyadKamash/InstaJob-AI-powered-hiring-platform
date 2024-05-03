@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "../UserContext";
 
 const ClientDBoardContent = ({ selectedOption }) => {
+  const { user } = useContext(UserContext);
   let content = null;
   switch (selectedOption) {
     case "Jobs":
@@ -11,9 +13,22 @@ const ClientDBoardContent = ({ selectedOption }) => {
 
       break;
     case "My Profile":
-      content = <div>Update your profile here</div>;
+      content = (
+        <div>
+          {user.firstname}
+          <br />
+          {user.email}
+          <br />
+          {user.lastname}
+          <br />
+          {user.usertype}
+          <br />
+          <br />
+          {user.email}
+        </div>
+      );
       break;
-    case "Interview":
+    case "Interviews":
       content = <div>Interview Content Here</div>;
       break;
     default:

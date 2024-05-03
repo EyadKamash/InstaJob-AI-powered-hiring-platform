@@ -199,6 +199,49 @@ app.get("/jobs", async (req, res) => {
   }
 });
 
+app.post("/postingjobs", async (req, res) => {
+  const {
+    companyemail,
+    title,
+    description,
+    requirements,
+    responsibilities,
+    rewards,
+    deadline,
+    salary,
+    country,
+    city,
+    remote,
+  } = req.body;
+  try {
+    const db = client.db("instajob");
+    const jobsCollection = db.collection("jobposts");
+    const result = await jobsCollection.insertOne({
+      companyemail,
+      title,
+      description,
+      requirements,
+      responsibilities,
+      rewards,
+      deadline,
+      salary,
+      country,
+      city,
+      remote,
+    });
+
+    res.json({
+      message: "Application created successfully",
+      result,
+    });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while creating the application" });
+  }
+});
+
 app.get("/checkauth", (req, res) => {
   if (req.session.user) {
     res.json(req.session.user);

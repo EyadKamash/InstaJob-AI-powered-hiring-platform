@@ -147,7 +147,7 @@ function ClientInterface() {
           )}
         </div>
         <div
-          className={`flex items-center  ${
+          className={`flex items-center ${
             isMobile ? "flex-col" : "flex-row"
           } space-y-4 p-4`}
         >
@@ -158,14 +158,24 @@ function ClientInterface() {
           >
             Hello, {firstname}
           </h1>
-          <button
-            className={`p-2 bg-red-500 text-white rounded ml-10 ${
-              isMobile ? "w-full" : ""
-            }`}
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
+          {isMobile && (
+            <button
+              className="p-2 bg-red-500 text-white rounded w-full mt-4"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          )}
+          {!isMobile && (
+            <div className="ml-auto">
+              <button
+                className="p-2 bg-red-500 text-white rounded"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

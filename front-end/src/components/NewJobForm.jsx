@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { UserContext } from "../UserContext";
+import { mapTitle, mapCountry } from "../Functions/mapTitle";
 
 function NewJobForm() {
   const { user } = useContext(UserContext);
@@ -23,14 +24,14 @@ function NewJobForm() {
     try {
       await axios.post("http://localhost:4000/postingjobs", {
         companyemail,
-        title: selectedOption,
+        title: mapTitle(selectedOption),
         description,
         requirements,
         responsibilities,
         rewards,
         deadline,
         salary,
-        country: selectedCountry,
+        country: mapCountry(selectedCountry, countryList),
         city,
         remote,
       });
