@@ -7,6 +7,8 @@ import Register from "./pages/Register";
 import ClientInterface from "./pages/ClientInterface";
 import CompanyInterface from "./pages/CompanyInterface";
 import { useUser, UserContextProvider } from "./UserContext";
+import VideoForm from "./pages/VideoForm";
+import VideoInterview from "./pages/VideoInterview";
 import axios from "axios";
 
 function App() {
@@ -53,6 +55,8 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<IndexPage />} />
+        <Route path="/videoform" element={<VideoForm />} />
+        <Route path="/videointerview" element={<VideoInterview />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {user && (
