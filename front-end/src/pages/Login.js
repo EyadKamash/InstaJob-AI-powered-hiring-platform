@@ -38,9 +38,13 @@ const Login = () => {
         usertype: response.data.usertype,
         lastname: response.data.lastname,
         firstname: response.data.firstname,
+        profilePhoto: response.data.profilePhoto,
+        cv: response.data.cv,
       });
       setUserType(response.data.usertype);
       setFirstName(response.data.firstname);
+      setLastName(response.data.lastname);
+
       localStorage.setItem("token", response.data.token); // Save token to localStorage
       setRedirect(true);
     } catch (error) {

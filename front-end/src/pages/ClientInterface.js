@@ -3,20 +3,28 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import ClientOptionsBar from "../components/ClientOptionsBar";
-import Jobpost from "../components/Jobpost";
 import ClientDBoardContent from "../Functions/ClientDBoardContent";
+import UseJobFilter from "../components/UseJobFilter"; // Import the custom hook
 
 function ClientInterface() {
   const { user } = useContext(UserContext);
   const [firstname, setFirstname] = useState("");
   const [jobs, setJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);
-  const [filter, setFilter] = useState("");
-  const [showRemote, setShowRemote] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedOption, setSelectedOption] = useState("Jobs");
   const navigate = useNavigate();
+  // eslint-disable-next-line
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("Jobs"); // Added this line
+
+  // Use the custom hook
+  const {
+    filteredJobs,
+    filter,
+    showRemote,
+    selectedCountry,
+    handleFilterChange,
+    handleRemoteChange,
+    handleCountryChange,
+  } = UseJobFilter(jobs);
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,7 +52,6 @@ function ClientInterface() {
             },
           });
           setJobs(response.data);
-          setFilteredJobs(response.data);
           setFirstname(user.firstname);
         } catch (error) {
           console.error("Error fetching jobs:", error);
@@ -61,33 +68,6 @@ function ClientInterface() {
     navigate("/login");
   };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-    filterJobs(e.target.value, showRemote, selectedCountry);
-  };
-
-  const handleRemoteChange = (e) => {
-    setShowRemote(e.target.checked);
-    filterJobs(filter, e.target.checked, selectedCountry);
-  };
-
-  const handleCountryChange = (e) => {
-    setSelectedCountry(e.target.value);
-    filterJobs(filter, showRemote, e.target.value);
-  };
-
-  const filterJobs = (title, remote, country) => {
-    let filtered = jobs.filter(
-      (job) =>
-        job.title.toLowerCase().includes(title.toLowerCase()) &&
-        (remote ? job.location.toLowerCase().includes("remote") : true) &&
-        (country !== ""
-          ? job.location.toLowerCase().includes(country.toLowerCase())
-          : true)
-    );
-    setFilteredJobs(filtered);
-  };
-
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
   };
@@ -101,81 +81,28 @@ function ClientInterface() {
         />
       </div>
       <div className="flex-1 flex flex-col">
-        <div className="bg-white flex flex-col flex-1 px-4 py-4 md:px-8 md:py-8">
-          {selectedOption === "Jobs" && (
-            <>
-              <h1 className="text-lg font-bold mb-2">Filters</h1>
-              <input
-                type="text"
-                placeholder="Search by job title"
-                value={filter}
-                onChange={handleFilterChange}
-                className="border border-gray-300 rounded-lg px-3 py-1 w-full mb-4"
-              />
-              <label className="flex items-center mb-2">
-                <input
-                  type="checkbox"
-                  checked={showRemote}
-                  onChange={handleRemoteChange}
-                  className="mr-2"
-                />
-                Remote Jobs
-              </label>
-              <select
-                value={selectedCountry}
-                onChange={handleCountryChange}
-                className="border border-gray-300 rounded-lg px-3 py-1 w-full"
-              >
-                <option value="">All Countries</option>
-                {/* Add your country options here */}
-              </select>
-              <div className="flex flex-col space-y-4 p-12">
-                {filteredJobs.map((job) => (
-                  <Jobpost key={job._id} job={job} className="m-2" />
-                ))}
-              </div>
-            </>
-          )}
-          {selectedOption !== "Jobs" && (
+        <div className="bg-white flex flex-col flex-1 p-4 md:p-8 overflow-hidden">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-lg font-bold">Hello, {firstname}</h1>
+            <button
+              className="p-2 bg-red-500 text-white rounded"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+          <div className="flex-1 overflow-auto">
             <ClientDBoardContent
               selectedOption={selectedOption}
               filteredJobs={filteredJobs}
               filter={filter}
               showRemote={showRemote}
               selectedCountry={selectedCountry}
+              handleFilterChange={handleFilterChange}
+              handleRemoteChange={handleRemoteChange}
+              handleCountryChange={handleCountryChange}
             />
-          )}
-        </div>
-        <div
-          className={`flex items-center ${
-            isMobile ? "flex-col" : "flex-row"
-          } space-y-4 p-4`}
-        >
-          <h1
-            className={`text-lg font-bold text-white ${
-              isMobile ? "text-center" : ""
-            }`}
-          >
-            Hello, {firstname}
-          </h1>
-          {isMobile && (
-            <button
-              className="p-2 bg-red-500 text-white rounded w-full mt-4"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          )}
-          {!isMobile && (
-            <div className="ml-auto">
-              <button
-                className="p-2 bg-red-500 text-white rounded"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

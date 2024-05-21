@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useState, useContext } from "react";
+import { UserContext } from "../UserContext";
+import ApplicationModal from "../Functions/ApplicationModal";
 
 const Jobpost = ({ job }) => {
+  const { user } = useContext(UserContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div key={job._id}>
       <div className="bg-gray-200 shadow-xl rounded-lg p-4 mb-4 lg:w-[60%] sm:w-[100%]">
@@ -10,7 +23,7 @@ const Jobpost = ({ job }) => {
         <div className="text-gray-500">{job.requirements}</div>
         <div className="text-gray-500">{job.responsibilities}</div>
         <div className="text-gray-500">{job.salary}</div>
-        <div className="text-gray-500">Job Posted By : {job.companyemail}</div>
+        <div className="text-gray-500">Job Posted By: {job.companyemail}</div>
         <div className="text-gray-500">{job.deadline}</div>
         <div className="flex flex-wrap gap-2">
           {(job.tags || []).map((tag) => (
@@ -22,12 +35,20 @@ const Jobpost = ({ job }) => {
             </span>
           ))}
         </div>
-        <div className="flex mt-4 ">
-          <button className="bg-[#00df9a] w-[200px] rounded-lg font-bold mx-auto py-2 px-4 text-black ">
+        <div className="flex mt-4">
+          <button
+            onClick={handleOpenModal}
+            className="bg-[#00df9a] w-[200px] rounded-lg font-bold mx-auto py-2 px-4 text-black"
+          >
             Apply Now
           </button>
         </div>
       </div>
+      <ApplicationModal
+        isOpen={isModalOpen}
+        onRequestClose={handleCloseModal}
+        job={job}
+      />
     </div>
   );
 };

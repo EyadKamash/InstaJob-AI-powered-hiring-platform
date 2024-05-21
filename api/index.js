@@ -8,7 +8,9 @@ const multer = require("multer");
 const fs = require("fs");
 const MongoStore = require("connect-mongo");
 const Job = require("./models/JobSchema");
-
+const Application = require("./models/Application");
+const User = require("./models/User");
+const { check, validationResult } = require("express-validator");
 const upload = multer({
   dest: "uploads/",
   fieldname: "file",
@@ -73,7 +75,24 @@ async function connect() {
 
 const jwtString = "1809427yafnkosilhjfbansoikfhbKJSAFGHDBVAS";
 
+//MIDDLEWARE
 app.use(express.json());
+const auth = (req, res, next) => {
+  const token = req.header("x-auth-token");
+
+  if (!token) {
+    return res.status(401).json({ msg: "No token, authorization denied" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, jwtString);
+    req.user = decoded.user;
+    next();
+  } catch (error) {
+    res.status(401).json({ msg: "Token is not valid" });
+  }
+};
+
 app.post("/register", async (req, res) => {
   const { firstname, lastname, email, password, usertype } = req.body;
   try {
@@ -123,7 +142,6 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    // Create a new session for each login
     req.session.regenerate(async (err) => {
       if (err) {
         return res.status(500).json({ message: "Failed to create session" });
@@ -134,11 +152,13 @@ app.post("/login", async (req, res) => {
         id: userDoc._id,
         usertype: userDoc.usertype,
         firstname: userDoc.firstname,
+        lastname: userDoc.lastname,
+        profilePhoto: userDoc.profilePhoto,
+        cv: userDoc.cv,
       };
 
-      // Define the token here
       const token = jwt.sign(
-        { email: userDoc.email, id: userDoc._id },
+        { id: userDoc._id, email: userDoc.email, usertype: userDoc.usertype },
         jwtString
       );
 
@@ -153,6 +173,9 @@ app.post("/login", async (req, res) => {
           message: "Login successful",
           usertype: userDoc.usertype,
           firstname: userDoc.firstname,
+          lastname: userDoc.lastname,
+          profilePhoto: userDoc.profilePhoto,
+          cv: userDoc.cv,
         });
     });
   } catch (error) {
@@ -250,23 +273,87 @@ app.get("/checkauth", (req, res) => {
   }
 });
 
-// //user profile
-// app.get("/userProfile/:userID", async (req, res) => {
-//   try {
-//     const user = await User.findById({ _id: req.params.id }).select(
-//       "-password"
-//     );
+//apply
+const generateInterviewDate = () => {
+  const today = new Date();
+  const randomDays = Math.floor(Math.random() * 10) + 1;
+  const interviewDate = new Date(today.setDate(today.getDate() + randomDays));
+  interviewDate.setHours(9, 0, 0, 0); // Set time to 9:00 AM
+  return interviewDate;
+};
+app.post("/apply", async (req, res) => {
+  try {
+    const { applicantName, applicantEmail, companyEmail, jobTitle } = req.body;
 
-//     if (!user) {
-//       return res.status(404).json({ msg: "User not found" });
-//     }
+    if (!applicantName || !applicantEmail || !companyEmail || !jobTitle) {
+      return res.status(400).send("All fields are required");
+    }
 
-//     res.status(200).json({ user });
-//   } catch (error) {
-//     console.error("Error fetching user profile", error);
-//     res.status(500).json({ msg: "Internal server error" });
-//   }
-// });
+    const interviewDate = generateInterviewDate();
+    const application = new Application({
+      applicantName,
+      applicantEmail,
+      companyEmail,
+      jobTitle,
+      interviewDate,
+      //
+    });
+    await application.save();
+    res.status(201).send("Application submitted successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("server error");
+  }
+});
+
+//user profile
+app.get("/userProfile/:userID", async (req, res) => {
+  try {
+    const user = await User.findById({ _id: req.params.id }).select(
+      "-password"
+    );
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Error fetching user profile", error);
+    res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
+//update profile
+app.put(
+  "/updateprofile",
+  [
+    auth,
+    [
+      check("email", "Please include a valid email").isEmail(),
+      check("firstname", "First name is required").not().isEmpty(),
+      check("lastname", "Last name is required").not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const { email, firstname, lastname } = req.body;
+    try {
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return res.status(404).json({ msg: "User not found" });
+      }
+
+      user.email = email;
+      user.firstname = firstname;
+      user.lastname = lastname;
+
+      await user.save();
+      res.json({ msg: "Profile updated successfully", user });
+    } catch (err) {
+      res.status(500).send("server error");
+    }
+  }
+);
 
 //----------------------------------------------------------------------------------------
 
