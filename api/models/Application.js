@@ -13,11 +13,6 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  jobId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Job",
-    required: true,
-  },
   jobTitle: {
     type: String,
     required: true,
@@ -46,10 +41,10 @@ const applicationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  interviewDate: {
-    type: Date,
-    default: null,
-  },
+  // interviewDate: {
+  //   type: Date,
+  //   default: null,
+  // },
 });
 
 const Application = mongoose.model(

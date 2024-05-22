@@ -281,30 +281,7 @@ const generateInterviewDate = () => {
   interviewDate.setHours(9, 0, 0, 0); // Set time to 9:00 AM
   return interviewDate;
 };
-app.post("/apply", async (req, res) => {
-  try {
-    const { applicantName, applicantEmail, companyEmail, jobTitle } = req.body;
 
-    if (!applicantName || !applicantEmail || !companyEmail || !jobTitle) {
-      return res.status(400).send("All fields are required");
-    }
-
-    const interviewDate = generateInterviewDate();
-    const application = new Application({
-      applicantName,
-      applicantEmail,
-      companyEmail,
-      jobTitle,
-      interviewDate,
-      //
-    });
-    await application.save();
-    res.status(201).send("Application submitted successfully");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("server error");
-  }
-});
 
 //user profile
 app.get("/userProfile/:userID", async (req, res) => {
@@ -354,6 +331,43 @@ app.put(
     }
   }
 );
+
+app.post("/apply", async (req, res) => {
+  const {
+    applicantName,
+    applicantEmail,
+    jobTitle,
+    yearsOfExperience,
+    collegeName,
+    companyName,
+    previousWorkName,
+    companyEmail,
+    jobLevel,
+  } = req.body;
+  try {
+    const db = client.db("instajob");
+    const applicationsCollection = db.collection("applications");
+
+    const result = await applicationsCollection.insertOne({
+      applicantName,
+      applicantEmail,
+      jobTitle,
+      yearsOfExperience,
+      collegeName,
+      companyName,
+      previousWorkName,
+      companyEmail,
+      jobLevel,
+    });
+
+    res.status(201).json({ msg: "Application submittied successfully" });
+  } catch (error) {
+    console.error("Error submiting Application:", error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while submitting Application" });
+  }
+});
 
 //----------------------------------------------------------------------------------------
 
