@@ -282,7 +282,6 @@ const generateInterviewDate = () => {
   return interviewDate;
 };
 
-
 //user profile
 app.get("/userProfile/:userID", async (req, res) => {
   try {
