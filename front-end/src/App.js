@@ -10,6 +10,7 @@ import { useUser, UserContextProvider } from "./UserContext";
 import VideoForm from "./pages/VideoForm";
 import VideoInterview from "./pages/VideoInterview";
 import axios from "axios";
+import Questions from "./pages/Questions";
 
 function App() {
   return (
@@ -41,15 +42,16 @@ function AppRoutes() {
         ) {
           alert("Unauthorized");
           navigate(
-            user.usertype === "job_seeker" ? "/clienthome" : "/companyhome",
+            user && user.usertype === "job_seeker" ? "/clienthome" : "/companyhome",
             { replace: true }
           );
         }
       }
     };
-
+  
     checkAuthStatus();
-  }, [setUser, navigate, location.pathname, user?.usertype]);
+  }, [setUser, navigate, location.pathname]);  // Removed user?.usertype since user might be null initially
+  
 
   return (
     <Routes>
@@ -57,6 +59,7 @@ function AppRoutes() {
         <Route index element={<IndexPage />} />
         <Route path="/videoform" element={<VideoForm />} />
         <Route path="/videointerview" element={<VideoInterview />} />
+        <Route path="/questions" element={<Questions />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {user && (
