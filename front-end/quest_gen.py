@@ -34,28 +34,30 @@ from nltk.corpus import stopwords
 import string
 import pke
 import traceback
-def get_nouns_multipartite(content):
-  out = []
-  try:
-    extractor = pke.unsupervised.MultipartiteRank()
-    extractor.load_document(input=content, language='en')
-    pos = {'PROPN', 'NOUN'}
-    stoplist = list(string.punctuation)
-    stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
-    stoplist += stopwords.words('english')
-    extractor.candidate_selection(pos=pos)
-    extractor.candidate_weighting(alpha=1.1,
-                                  threshold=0.75,
-                                  method='average')
-    keyphrases = extractor.get_n_best(n=15)
+import spacy
 
-    for val in keyphrases:
-      out.append(val[0])
-  except:
+def get_nouns_multipartite(content):
     out = []
-    traceback.print_exec()
-  
-  return out
+    try:
+        extractor = pke.unsupervised.MultipartiteRank()
+        extractor.load_document(input=content, language='en')
+        pos = {'PROPN', 'NOUN'}
+        stoplist = list(string.punctuation)
+        stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
+        stoplist += stopwords.words('english')
+        extractor.candidate_selection(pos=pos)
+        extractor.candidate_weighting(alpha=1.1,
+                                      threshold=0.75,
+                                      method='average')
+        keyphrases = extractor.get_n_best(n=15)
+
+        for val in keyphrases:
+            out.append(val[0])
+    except:
+        out = []
+        traceback.print_exc()
+    
+    return out
 
 # # to get Important words by comparing keywords in original passage and summarized passage
 from flashtext import KeywordProcessor

@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 import pke
@@ -23,8 +24,17 @@ from sklearn.metrics.pairwise import cosine_similarity
 from collections import OrderedDict
 from quest_gen import get_question, summarizer, get_keywords, get_nouns_multipartite, sense2vec_get_words, mmr, get_distractors, get_distractors_wordnet
 
-
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow your frontend domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 templates = Jinja2Templates(directory="src/Pages") ##directory 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -39,7 +49,6 @@ s2v = Sense2Vec().from_disk('s2v_old')
 sentence_transformer_model = SentenceTransformer('msmarco-distilbert-base-v3')
 
 normalized_levenshtein = NormalizedLevenshtein()
-
 
 @app.get("/")
 async def hello_world(request: Request):
@@ -57,32 +66,27 @@ async def generate_question(request: Request):
 
     np = get_keywords(context, summarized_text)
 
-    output = ""
+    questions = []
     for answer in np:
         ques = get_question(summarized_text, answer, question_model, question_tokenizer, device)
         if radiobutton == "Wordnet":
             distractors = get_distractors_wordnet(answer)
         else:
             distractors = get_distractors(answer.capitalize(), ques, s2v, sentence_transformer_model, 40, 0.2, normalized_levenshtein)
-        output = output + "<b style='color:blue;'>" + ques + "</b>"
-        output = output + "<br>"
-        output = output + "<b style='color:green;'>" + "Ans: " + answer.capitalize() + "</b>" + "<br>"
-        if len(distractors) > 0:
-            for distractor in distractors[:4]:
-                output = output + "<b style='color:brown;'>" + distractor + "</b>" + "<br>"
-        output = output + "<br>"
+        question_data = {
+            'question': ques,
+            'answer': answer,
+            'distractors': distractors[:4]
+        }
+        questions.append(question_data)
 
     summary = "Summary: " + summarized_text
     for answer in np:
         summary = summary.replace(answer, "<b>" + answer + "</b>")
         summary = summary.replace(answer.capitalize(), "<b>" + answer.capitalize() + "</b>")
-    output = output + "<p>" + summary + "</p>"
-    output = output + "<br>"
 
-    response = {'output': output}
+    response = {'questions': questions, 'summary': summary}
     return response
-
-
 
 if __name__ == '__main__':
     import uvicorn
